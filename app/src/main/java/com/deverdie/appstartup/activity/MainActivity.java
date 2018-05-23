@@ -1,6 +1,11 @@
 package com.deverdie.appstartup.activity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -10,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.deverdie.appstartup.R;
 
@@ -47,12 +53,24 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String uri = preferences.getString("key_sound_found", "content://settings/system/notification_sound");
+        RingtoneManager.getRingtone(this, Uri.parse(uri)).play();
         int id = item.getItemId();
+
+        if (id == R.id.action_search) {
+            String name = preferences.getString("key_username", null);
+            String language = preferences.getString("key_language", null);
+            Toast.makeText(getApplicationContext(), String.format("%s: %s", name, language), Toast.LENGTH_LONG).show();
+            return true;
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
